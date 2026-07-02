@@ -21,11 +21,13 @@ const userSchema = mongoose.Schema(
       min: 0,
       max: 150,
     },
-    salt:{
-        type:String
+    salt: {
+      type: String,
+      select: false,
     },
     password: {
       type: String,
+      select: false,
       required: [true, "Password is required"],
     },
   },
@@ -34,29 +36,36 @@ const userSchema = mongoose.Schema(
 
 userSchema.pre("save", function () {
   const user = this;
-  if (!user.isModified("password")){ return;}
+  if (!user.isModified("password")) {
+    return;
+  }
   const salt = randomBytes(16).toString();
   const hashedPassword = createHmac("sha256", salt)
     .update(user.password)
     .digest("hex");
-    this.salt = salt;
-    this.password = hashedPassword;
-    ;
+  this.salt = salt;
+  this.password = hashedPassword;
 });
 
-userSchema.static("matchPassword",async function(email,password){
-    const user = await this.findOne({email});
-    if(!user)throw new Error("User not Found");
-    ;
-    const salt = user.salt;
-    const hashedPassword = user.password;
-    const userProvidedHash = createHmac("sha256",salt).update(password).digest("hex")
-    if(userProvidedHash !== hashedPassword)throw new Error("Incorrect Password");
-    console.log("test");
-    
-     return({...user,password:undefined,salt:undefined})
-    })
+userSchema.static("matchPassword", async function (email, password) {
+  const user = await this.findOne({ email }).select("+password +salt");
 
+  if (!user) throw new Error("User not Found");
+
+  const hashedPassword = user.password;
+  const userProvidedHash = createHmac("sha256", user.salt)
+    .update(password)
+    .digest("hex");
+
+  if (userProvidedHash !== hashedPassword)
+    throw new Error("Incorrect Password");
+
+  return {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+  };
+});
 
 const User = mongoose.model("User", userSchema);
 

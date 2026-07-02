@@ -1,0 +1,122 @@
+<%# Footer Partial — include('../partials/footer') %>
+
+<link rel="stylesheet" href="/css/footer.css" />
+
+<footer class="footer">
+  <div class="footer__container">
+
+    <div class="footer__grid">
+
+      <!-- Brand / About -->
+      <div class="footer__col footer__brand">
+        <a href="/" class="footer__logo" aria-label="BlogSpace homepage">
+          <i class="fa-solid fa-feather-pointer" aria-hidden="true"></i>
+          <span>BlogSpace</span>
+        </a>
+        <p class="footer__desc">
+          A modern space for writers and readers to share ideas, stories,
+          and knowledge that matters. Built for curious minds.
+        </p>
+        <div class="footer__social" aria-label="Social media links">
+          <a href="https://twitter.com" class="footer__social-icon" aria-label="Follow us on Twitter" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-twitter" aria-hidden="true"></i>
+          </a>
+          <a href="https://github.com" class="footer__social-icon" aria-label="Follow us on GitHub" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-github" aria-hidden="true"></i>
+          </a>
+          <a href="https://linkedin.com" class="footer__social-icon" aria-label="Follow us on LinkedIn" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+          </a>
+          <a href="https://instagram.com" class="footer__social-icon" aria-label="Follow us on Instagram" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <nav class="footer__col" aria-label="Quick links">
+        <h3 class="footer__heading">Quick Links</h3>
+        <ul class="footer__links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/blog">Blogs</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/login">Login</a></li>
+        </ul>
+      </nav>
+
+      <!-- Categories -->
+      <nav class="footer__col" aria-label="Blog categories">
+        <h3 class="footer__heading">Categories</h3>
+        <ul class="footer__links">
+          <li><a href="/categories/technology">Technology</a></li>
+          <li><a href="/categories/design">Design</a></li>
+          <li><a href="/categories/business">Business</a></li>
+          <li><a href="/categories/lifestyle">Lifestyle</a></li>
+          <li><a href="/categories/programming">Programming</a></li>
+        </ul>
+      </nav>
+
+      <!-- Newsletter -->
+      <div class="footer__col footer__newsletter">
+        <h3 class="footer__heading">Stay Updated</h3>
+        <p class="footer__desc">
+          Get the latest articles delivered straight to your inbox. No spam.
+        </p>
+        <form class="footer__newsletter-form" action="/newsletter" method="POST">
+          <label for="newsletterEmail" class="sr-only">Email address</label>
+          <input
+            type="email"
+            id="newsletterEmail"
+            name="email"
+            class="footer__newsletter-input"
+            placeholder="Enter your email"
+            required
+            aria-required="true"
+          />
+          <button type="submit" class="btn btn--primary footer__newsletter-btn">
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer__bottom">
+      <p class="footer__copyright">
+        &copy; <%= new Date().getFullYear() %> BlogSpace. All rights reserved.
+      </p>
+      <div class="footer__legal">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <span class="footer__divider" aria-hidden="true">|</span>
+        <a href="/terms">Terms of Service</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Back to Top Button -->
+  <button type="button" id="backToTopBtn" class="back-to-top" aria-label="Back to top">
+    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+  </button>
+</footer>
+
+<script>
+  // Footer interactivity: show/hide + scroll behaviour for the back-to-top button
+  document.addEventListener('DOMContentLoaded', () => {
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (!backToTopBtn) return;
+
+    const toggleVisibility = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      backToTopBtn.classList.toggle('is-visible', scrollY > 400);
+    };
+    toggleVisibility();
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>

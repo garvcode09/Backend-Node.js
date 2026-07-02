@@ -1,0 +1,149 @@
+<%# Navbar Partial — include('../partials/navbar') %>
+
+<link rel="stylesheet" href="/css/navbar.css" />
+
+<header class="navbar" id="navbar">
+  <div class="navbar__container">
+
+    <!-- Logo -->
+    <a href="/" class="navbar__logo" aria-label="BlogSpace homepage">
+      <i class="fa-solid fa-feather-pointer navbar__logo-icon" aria-hidden="true"></i>
+      <span class="navbar__logo-text">BlogSpace</span>
+    </a>
+
+    <!-- Primary Navigation -->
+    <nav class="navbar__nav" id="navbarNav" aria-label="Primary navigation">
+      <ul class="navbar__links">
+        <li>
+          <a href="/" class="navbar__link <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'navbar__link--active' : '' %>"
+            <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'aria-current="page"' : '' %>>Home</a>
+        </li>
+        <li>
+          <a href="/blog" class="navbar__link <%= typeof activePage !== 'undefined' && activePage === 'blog' ? 'navbar__link--active' : '' %>"
+            <%= typeof activePage !== 'undefined' && activePage === 'blog' ? 'aria-current="page"' : '' %>>Blogs</a>
+        </li>
+        <li>
+          <a href="/categories" class="navbar__link <%= typeof activePage !== 'undefined' && activePage === 'categories' ? 'navbar__link--active' : '' %>"
+            <%= typeof activePage !== 'undefined' && activePage === 'categories' ? 'aria-current="page"' : '' %>>Categories</a>
+        </li>
+        <li>
+          <a href="/about" class="navbar__link <%= typeof activePage !== 'undefined' && activePage === 'about' ? 'navbar__link--active' : '' %>"
+            <%= typeof activePage !== 'undefined' && activePage === 'about' ? 'aria-current="page"' : '' %>>About</a>
+        </li>
+        <li>
+          <a href="/contact" class="navbar__link <%= typeof activePage !== 'undefined' && activePage === 'contact' ? 'navbar__link--active' : '' %>"
+            <%= typeof activePage !== 'undefined' && activePage === 'contact' ? 'aria-current="page"' : '' %>>Contact</a>
+        </li>
+      </ul>
+
+      <!-- Mobile-only auth area (shown inside the slide-down menu) -->
+      <div class="navbar__mobile-auth">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/profile" class="navbar__avatar-link">
+            <img src="<%= user.avatarUrl || '/images/avatar-placeholder.png' %>" alt="<%= user.name %>'s avatar" class="navbar__avatar" />
+            <span><%= user.name %></span>
+          </a>
+          <a href="/logout" class="btn btn--ghost">Logout</a>
+        <% } else { %>
+          <a href="/login" class="btn btn--ghost">Login</a>
+          <a href="/register" class="btn btn--primary">Register</a>
+        <% } %>
+      </div>
+    </nav>
+
+    <!-- Search -->
+    <form class="navbar__search" role="search" action="/search" method="GET">
+      <label for="navbarSearchInput" class="sr-only">Search articles</label>
+      <i class="fa-solid fa-magnifying-glass navbar__search-icon" aria-hidden="true"></i>
+      <input type="search" name="q" id="navbarSearchInput" class="navbar__search-input" placeholder="Search articles..." autocomplete="off" />
+    </form>
+
+    <!-- Desktop auth / avatar -->
+    <div class="navbar__actions">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="/profile" class="navbar__avatar-link" aria-label="View profile">
+          <img src="<%= user.avatarUrl || '/images/avatar-placeholder.png' %>" alt="<%= user.name %>'s avatar" class="navbar__avatar" />
+        </a>
+      <% } else { %>
+        <a href="/login" class="btn btn--ghost">Login</a>
+        <a href="/register" class="btn btn--primary">Register</a>
+      <% } %>
+
+      <!-- Hamburger Toggle (mobile) -->
+      <button type="button" class="navbar__toggle" id="navbarToggle" aria-label="Toggle navigation menu" aria-controls="navbarNav" aria-expanded="false">
+        <span class="navbar__toggle-bar"></span>
+        <span class="navbar__toggle-bar"></span>
+        <span class="navbar__toggle-bar"></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<script>
+  // Navbar interactivity: mobile toggle, sticky shadow, active-link fallback, close-on-click
+  document.addEventListener('DOMContentLoaded', () => {
+    const navbar = document.getElementById('navbar');
+    const navToggle = document.getElementById('navbarToggle');
+    const navMenu = document.getElementById('navbarNav');
+    const navLinks = navMenu ? navMenu.querySelectorAll('.navbar__link') : [];
+
+    const openMenu = () => {
+      navMenu.classList.add('is-open');
+      navToggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    };
+    const closeMenu = () => {
+      navMenu.classList.remove('is-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    };
+
+    if (navToggle && navMenu) {
+      navToggle.addEventListener('click', () => {
+        navMenu.classList.contains('is-open') ? closeMenu() : openMenu();
+      });
+
+      navLinks.forEach((link) => link.addEventListener('click', closeMenu));
+
+      document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('is-open') && !navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('is-open')) {
+          closeMenu();
+          navToggle.focus();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 860 && navMenu.classList.contains('is-open')) closeMenu();
+      });
+    }
+
+    // Shadow on scroll
+    const handleScroll = () => {
+      if (!navbar) return;
+      const scrollY = window.scrollY || window.pageYOffset;
+      navbar.classList.toggle('navbar--scrolled', scrollY > 12);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Client-side active-link fallback (in case activePage wasn't passed from the route)
+    const hasServerActiveLink = navMenu ? navMenu.querySelector('.navbar__link--active') : null;
+    if (!hasServerActiveLink) {
+      const currentPath = window.location.pathname;
+      navLinks.forEach((link) => {
+        const linkPath = new URL(link.href).pathname;
+        if (linkPath === currentPath) {
+          link.classList.add('navbar__link--active');
+          link.setAttribute('aria-current', 'page');
+        }
+      });
+    }
+  });
+</script>

@@ -73,6 +73,11 @@ function handleSiginPageRender(req, res) {
   res.render("signin");
 }
 
+function handleLogout(req,res) {
+  res.clearCookie("token").redirect("/")
+  
+}
+
 module.exports = {
   handleSigin,
   handleSigup,

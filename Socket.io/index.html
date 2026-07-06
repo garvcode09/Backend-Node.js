@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title >Document</title>
+</head>
+<body>
+    <div id="messages" style="border:2px solid red ;" >
+        <h1>Messages</h1>
+    
+    </div>
+<input type="text" id="message-box" placeholder="Enter Your Message" style="margin-top: 5px;">
+<button id="sendMessage">Send Message</button>
+    <script>
+        const socket = new WebSocket("ws://localhost:3000")
+        socket.onopen=()=>{
+            socket.send("hello server")
+        }
+
+        const messageContainer = document.getElementById("messages")
+        const messageBox = document.getElementById("message-box")
+        const sendButton = document.getElementById("sendMessage")
+
+       
+        
+         socket.onmessage = (message)=>{
+        
+            
+         const li = document.createElement("li")
+         li.innerText = JSON.stringify(message.data);
+         messageContainer.appendChild(li);   
+         console.log(message);
+         }
+        sendButton.addEventListener("click",()=>{
+            console.log("sending",messageBox.value);
+            
+         socket.send(messageBox.value)  
+        })        
+    </script>
+    
+</body>
+</html>
